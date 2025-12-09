@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio - Cadastro de Participantes</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header com Navegação -->
+        <header class="header">
+            <h1><span class="header-icon">🎯</span><span class="header-text">Sistema de Sorteio</span></h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link active">Cadastro</a>
+                <a href="configuracao.html" class="nav-link">Configuração</a>
+                <a href="sorteio.html" class="nav-link">Sorteio</a>
+            </nav>
+        </header>
+
+        <!-- Card Principal -->
+        <main class="card">
+            <h2 class="card-title">📋 Cadastro de Participantes</h2>
+            
+            <!-- Formulário de Adição -->
+            <form id="form-adicionar" class="form-group">
+                <input 
+                    type="text" 
+                    id="input-nome" 
+                    class="input" 
+                    placeholder="Digite o nome do participante"
+                    autocomplete="off"
+                    maxlength="500"
+                >
+                <button type="submit" class="btn btn-primary">
+                    + Adicionar
+                </button>
+            </form>
+            <p class="input-hint">💡 Dica: Separe os nomes por vírgula para cadastrar vários de uma vez</p>
+
+            <!-- Lista de Participantes -->
+            <ul id="lista-participantes" class="lista-participantes">
+                <!-- Renderizado via JavaScript -->
+            </ul>
+
+            <!-- Footer da Lista -->
+            <div class="lista-footer">
+                <span id="contador" class="contador">Total: <strong>0</strong> participantes</span>
+                <button id="btn-limpar" class="btn btn-danger btn-icon">
+                    🗑️ Limpar Todos
+                </button>
+            </div>
+        </main>
+
+        <!-- Ação Rápida -->
+        <div class="text-center mt-20">
+            <a href="sorteio.html" class="btn btn-success btn-lg">
+                🎰 Ir para o Sorteio
+            </a>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+

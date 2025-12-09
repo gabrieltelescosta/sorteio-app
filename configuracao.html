@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio - Configuração</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header com Navegação -->
+        <header class="header">
+            <h1><span class="header-icon">🎯</span><span class="header-text">Sistema de Sorteio</span></h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Cadastro</a>
+                <a href="configuracao.html" class="nav-link active">Configuração</a>
+                <a href="sorteio.html" class="nav-link">Sorteio</a>
+            </nav>
+        </header>
+
+        <!-- Card Principal -->
+        <main class="card">
+            <h2 class="card-title">⭐ Configuração do Ganhador</h2>
+            
+            <!-- Explicação -->
+            <div class="alert alert-info">
+                Selecione um participante para que ele seja o ganhador garantido do sorteio.
+                Se nenhum for selecionado, o sorteio será totalmente aleatório.
+            </div>
+
+            <!-- Lista de Preferências -->
+            <div id="preferencia-lista" class="preferencia-lista">
+                <!-- Renderizado via JavaScript -->
+            </div>
+        </main>
+
+        <!-- Ação Rápida -->
+        <div class="text-center mt-20">
+            <a href="sorteio.html" class="btn btn-success btn-lg">
+                🎰 Ir para o Sorteio
+            </a>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+

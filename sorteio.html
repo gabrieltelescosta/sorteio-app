@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio - Roleta</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header com Navegação -->
+        <header class="header">
+            <h1><span class="header-icon">🎯</span><span class="header-text">Sistema de Sorteio</span></h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Cadastro</a>
+                <a href="configuracao.html" class="nav-link">Configuração</a>
+                <a href="sorteio.html" class="nav-link active">Sorteio</a>
+            </nav>
+        </header>
+
+        <!-- Card Principal -->
+        <main class="card sorteio-container">
+            <h2 class="card-title">🎰 Hora do Sorteio!</h2>
+
+            <!-- Roleta -->
+            <div class="roleta-wrapper">
+                <div class="roleta-highlight"></div>
+                <div id="roleta-lista" class="roleta-lista">
+                    <div class="roleta-item">Aguardando...</div>
+                </div>
+            </div>
+
+            <!-- Botão de Sortear -->
+            <button id="btn-sortear" class="btn btn-success btn-lg">
+                🎰 Iniciar Sorteio
+            </button>
+
+            <!-- Resultado -->
+            <div id="resultado-container" class="resultado-container">
+                <p class="resultado-label">🎉 O vencedor é:</p>
+                <h2 id="resultado-nome" class="resultado-nome"></h2>
+            </div>
+
+            <!-- Configurações -->
+            <div class="config-section">
+                <div id="config-toggle" class="config-toggle">
+                    ⚙️ Configurações do Sorteio
+                    <span>▼</span>
+                </div>
+                <div id="config-panel" class="config-panel">
+                    <div class="config-item">
+                        <label class="config-label">
+                            Duração da animação: <span id="config-tempo-value" class="config-value">4s</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="config-tempo" 
+                            class="config-range" 
+                            min="2" 
+                            max="8" 
+                            step="0.5" 
+                            value="4"
+                        >
+                    </div>
+                    <div class="config-item">
+                        <label class="config-checkbox">
+                            <input type="checkbox" id="config-repetir" checked>
+                            <span>Permitir mesmo ganhador consecutivo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Container de Confetes -->
+    <div id="confetti-container" class="confetti-container"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
