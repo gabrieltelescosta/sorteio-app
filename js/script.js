@@ -10,8 +10,53 @@ const STORAGE_KEYS = {
     PARTICIPANTES: 'sorteio_participantes',
     PREFERIDO: 'sorteio_preferido',
     CONFIGURACOES: 'sorteio_configuracoes',
-    ULTIMO_GANHADOR: 'sorteio_ultimo_ganhador'
+    ULTIMO_GANHADOR: 'sorteio_ultimo_ganhador',
+    AUTH: 'sorteio_auth'
 };
+
+// ============================================
+// SISTEMA DE AUTENTICAÇÃO
+// ============================================
+
+const CREDENCIAIS = {
+    usuario: 'maedoaviator',
+    senha: 'Senha@123'
+};
+
+function verificarAutenticacao() {
+    const auth = sessionStorage.getItem(STORAGE_KEYS.AUTH);
+    return auth === 'true';
+}
+
+function fazerLogin(usuario, senha) {
+    if (usuario === CREDENCIAIS.usuario && senha === CREDENCIAIS.senha) {
+        sessionStorage.setItem(STORAGE_KEYS.AUTH, 'true');
+        return true;
+    }
+    return false;
+}
+
+function fazerLogout() {
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH);
+    window.location.href = 'login.html';
+}
+
+function protegerPagina() {
+    const path = window.location.pathname;
+    const isLoginPage = path.includes('login');
+    
+    if (!isLoginPage && !verificarAutenticacao()) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    if (isLoginPage && verificarAutenticacao()) {
+        window.location.href = 'index.html';
+        return false;
+    }
+    
+    return true;
+}
 
 const CONFIG_PADRAO = {
     tempoAnimacao: 4000,      // 4 segundos
@@ -722,9 +767,17 @@ function handleRepetirChange() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Verificar autenticação primeiro
+    if (!protegerPagina()) {
+        return; // Redirecionando, não continuar
+    }
+    
     const pagina = detectarPagina();
     
     switch (pagina) {
+        case 'login':
+            initLogin();
+            break;
         case 'cadastro':
             initCadastro();
             break;
@@ -736,19 +789,71 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
     }
     
-    // Verificar integridade dos dados
-    verificarIntegridade();
+    // Verificar integridade dos dados (exceto na página de login)
+    if (pagina !== 'login') {
+        verificarIntegridade();
+    }
 });
 
 function detectarPagina() {
     const path = window.location.pathname;
     
-    if (path.includes('configuracao')) {
+    if (path.includes('login')) {
+        return 'login';
+    } else if (path.includes('configuracao')) {
         return 'configuracao';
     } else if (path.includes('sorteio')) {
         return 'sorteio';
     } else {
         return 'cadastro';
+    }
+}
+
+function initLogin() {
+    const form = document.getElementById('form-login');
+    if (form) {
+        form.addEventListener('submit', handleLogin);
+    }
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const usuarioInput = document.getElementById('input-usuario');
+    const senhaInput = document.getElementById('input-senha');
+    
+    if (!usuarioInput || !senhaInput) return;
+    
+    const usuario = usuarioInput.value.trim();
+    const senha = senhaInput.value;
+    
+    if (fazerLogin(usuario, senha)) {
+        window.location.href = 'index.html';
+    } else {
+        mostrarMensagemLogin('Usuário ou senha incorretos.', 'warning');
+        senhaInput.value = '';
+        senhaInput.focus();
+    }
+}
+
+function mostrarMensagemLogin(texto, tipo = 'info') {
+    // Remover mensagem anterior se existir
+    const msgAnterior = document.querySelector('.alert');
+    if (msgAnterior) {
+        msgAnterior.remove();
+    }
+    
+    const msg = document.createElement('div');
+    msg.className = `alert alert-${tipo}`;
+    msg.textContent = texto;
+    
+    const form = document.getElementById('form-login');
+    if (form) {
+        form.insertBefore(msg, form.firstChild);
+        
+        setTimeout(() => {
+            msg.remove();
+        }, 3000);
     }
 }
 

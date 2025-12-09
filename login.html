@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><span class="header-icon">🎯</span><span class="header-text">Sistema de Sorteio</span></h1>
+        </header>
+
+        <!-- Card de Login -->
+        <main class="card login-card">
+            <h2 class="card-title">🔐 Acesso Restrito</h2>
+            
+            <form id="form-login" class="login-form">
+                <div class="form-field">
+                    <label for="input-usuario" class="form-label">Usuário</label>
+                    <input 
+                        type="text" 
+                        id="input-usuario" 
+                        class="input" 
+                        placeholder="Digite seu usuário"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+                
+                <div class="form-field">
+                    <label for="input-senha" class="form-label">Senha</label>
+                    <input 
+                        type="password" 
+                        id="input-senha" 
+                        class="input" 
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    🚀 Entrar
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
