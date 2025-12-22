@@ -8,7 +8,7 @@
 
 const STORAGE_KEYS = {
     PARTICIPANTES: 'sorteio_participantes',
-    PREFERIDO: 'sorteio_preferido',
+    PREFERIDOS: 'sorteio_preferidos',  // Array ordenado de IDs
     CONFIGURACOES: 'sorteio_configuracoes',
     ULTIMO_GANHADOR: 'sorteio_ultimo_ganhador',
     AUTH: 'sorteio_auth'
@@ -19,7 +19,7 @@ const STORAGE_KEYS = {
 // ============================================
 
 const CREDENCIAIS = {
-    usuario: 'maedoaviator',
+    usuario: 'acesso',
     senha: 'Senha@123'
 };
 
@@ -74,16 +74,62 @@ function setParticipantes(participantes) {
     localStorage.setItem(STORAGE_KEYS.PARTICIPANTES, JSON.stringify(participantes));
 }
 
-function getPreferido() {
-    return localStorage.getItem(STORAGE_KEYS.PREFERIDO);
+function getPreferidos() {
+    const data = localStorage.getItem(STORAGE_KEYS.PREFERIDOS);
+    return data ? JSON.parse(data) : [];
 }
 
-function setPreferido(id) {
-    if (id === null || id === '') {
-        localStorage.removeItem(STORAGE_KEYS.PREFERIDO);
+function setPreferidos(ids) {
+    if (!ids || ids.length === 0) {
+        localStorage.removeItem(STORAGE_KEYS.PREFERIDOS);
     } else {
-        localStorage.setItem(STORAGE_KEYS.PREFERIDO, id);
+        localStorage.setItem(STORAGE_KEYS.PREFERIDOS, JSON.stringify(ids));
     }
+}
+
+function adicionarPreferido(id) {
+    const preferidos = getPreferidos();
+    if (!preferidos.includes(id)) {
+        preferidos.push(id);
+        setPreferidos(preferidos);
+    }
+}
+
+function removerPreferido(id) {
+    const preferidos = getPreferidos();
+    const index = preferidos.indexOf(id);
+    if (index > -1) {
+        preferidos.splice(index, 1);
+        setPreferidos(preferidos);
+    }
+}
+
+function moverPreferidoAcima(id) {
+    const preferidos = getPreferidos();
+    const index = preferidos.indexOf(id);
+    if (index > 0) {
+        [preferidos[index - 1], preferidos[index]] = [preferidos[index], preferidos[index - 1]];
+        setPreferidos(preferidos);
+    }
+}
+
+function moverPreferidoAbaixo(id) {
+    const preferidos = getPreferidos();
+    const index = preferidos.indexOf(id);
+    if (index > -1 && index < preferidos.length - 1) {
+        [preferidos[index], preferidos[index + 1]] = [preferidos[index + 1], preferidos[index]];
+        setPreferidos(preferidos);
+    }
+}
+
+function consumirProximoPreferido() {
+    const preferidos = getPreferidos();
+    if (preferidos.length > 0) {
+        const proximo = preferidos.shift();
+        setPreferidos(preferidos);
+        return proximo;
+    }
+    return null;
 }
 
 function getConfiguracoes() {
@@ -200,10 +246,8 @@ function removerParticipante(id) {
     participantes = participantes.filter(p => p.id !== id);
     setParticipantes(participantes);
     
-    // Se o participante removido era o preferido, limpar preferência
-    if (getPreferido() === id) {
-        setPreferido(null);
-    }
+    // Se o participante removido estava na lista de preferidos, remover
+    removerPreferido(id);
     
     // Se era o último ganhador, limpar
     if (getUltimoGanhador() === id) {
@@ -214,7 +258,7 @@ function removerParticipante(id) {
 function limparTodos() {
     if (confirm('Tem certeza que deseja remover todos os participantes?')) {
         setParticipantes([]);
-        setPreferido(null);
+        setPreferidos([]);
         localStorage.removeItem(STORAGE_KEYS.ULTIMO_GANHADOR);
         return true;
     }
@@ -222,28 +266,33 @@ function limparTodos() {
 }
 
 // ============================================
-// FUNÇÕES DE PREFERÊNCIA
+// FUNÇÕES DE PREFERÊNCIA (FILA ORDENADA)
 // ============================================
 
-function selecionarPreferido(id) {
-    const participantes = getParticipantes();
-    const existe = participantes.find(p => p.id === id);
-    
-    if (id && !existe) {
-        setPreferido(null);
-        return;
+function togglePreferido(id) {
+    const preferidos = getPreferidos();
+    if (preferidos.includes(id)) {
+        removerPreferido(id);
+    } else {
+        adicionarPreferido(id);
     }
-    
-    setPreferido(id);
 }
 
-function obterNomePreferido() {
-    const prefId = getPreferido();
-    if (!prefId) return null;
-    
+function obterPreferidosComNomes() {
+    const preferidos = getPreferidos();
     const participantes = getParticipantes();
-    const preferido = participantes.find(p => p.id === prefId);
-    return preferido ? preferido.nome : null;
+    
+    return preferidos.map(id => {
+        const p = participantes.find(part => part.id === id);
+        return p ? { id: p.id, nome: p.nome } : null;
+    }).filter(p => p !== null);
+}
+
+function obterParticipantesDisponiveis() {
+    const preferidos = getPreferidos();
+    const participantes = getParticipantes();
+    
+    return participantes.filter(p => !preferidos.includes(p.id));
 }
 
 // ============================================
@@ -344,19 +393,21 @@ let sorteioEmAndamento = false;
 
 function sortearVencedor() {
     const participantes = getParticipantes();
-    const prefId = getPreferido();
+    const preferidos = getPreferidos();
     const config = getConfiguracoes();
     const ultimoGanhador = getUltimoGanhador();
     
-    // Se há preferido, ele ganha
-    if (prefId) {
+    // Se há preferidos na fila, o primeiro ganha e é removido da fila
+    if (preferidos.length > 0) {
+        const prefId = preferidos[0];
         const preferido = participantes.find(p => p.id === prefId);
         if (preferido) {
-            return preferido;
+            // Consumir o preferido da fila (remover após o sorteio)
+            return { ...preferido, _consumirDaFila: true };
         }
     }
     
-    // Filtrar participantes elegíveis
+    // Filtrar participantes elegíveis (sorteio aleatório)
     let elegiveis = [...participantes];
     
     // Se não permite repetir e há último ganhador
@@ -384,6 +435,12 @@ function iniciarSorteio(callback) {
     
     animarRoleta(vencedor, () => {
         setUltimoGanhador(vencedor.id);
+        
+        // Se o vencedor veio da fila de preferidos, consumir da fila
+        if (vencedor._consumirDaFila) {
+            consumirProximoPreferido();
+        }
+        
         sorteioEmAndamento = false;
         if (callback) callback(vencedor);
     });
@@ -554,58 +611,72 @@ function renderizarListaParticipantes() {
 }
 
 function renderizarListaPreferencia() {
-    const lista = document.getElementById('preferencia-lista');
+    const containerDisponiveis = document.getElementById('participantes-disponiveis');
+    const containerFila = document.getElementById('fila-ganhadores');
     
-    if (!lista) return;
+    if (!containerDisponiveis || !containerFila) return;
     
     const participantes = getParticipantes();
-    const prefId = getPreferido();
+    const preferidos = getPreferidos();
+    const disponiveis = obterParticipantesDisponiveis();
+    const filaComNomes = obterPreferidosComNomes();
     
     if (participantes.length === 0) {
-        lista.innerHTML = `
+        containerDisponiveis.innerHTML = `
             <div class="lista-vazia">
                 <div class="lista-vazia-icon">👥</div>
                 <p>Nenhum participante cadastrado</p>
                 <a href="index.html" class="btn btn-primary mt-20">Cadastrar Participantes</a>
             </div>
         `;
+        containerFila.innerHTML = '';
         return;
     }
     
-    let html = `
-        <div class="preferencia-item">
-            <input type="radio" 
-                   name="preferido" 
-                   id="pref-none" 
-                   value="" 
-                   class="preferencia-input"
-                   ${!prefId ? 'checked' : ''}
-                   onchange="handlePreferenciaChange('')">
-            <label for="pref-none" class="preferencia-label">
-                <span class="preferencia-radio"></span>
-                <span class="preferencia-nome">🎲 Nenhum (sorteio totalmente aleatório)</span>
-            </label>
-        </div>
-    `;
+    // Renderizar participantes disponíveis
+    if (disponiveis.length === 0) {
+        containerDisponiveis.innerHTML = `
+            <div class="lista-vazia-small">
+                <p>Todos os participantes estão na fila</p>
+            </div>
+        `;
+    } else {
+        containerDisponiveis.innerHTML = disponiveis.map(p => `
+            <div class="disponivel-item" data-id="${p.id}">
+                <span class="disponivel-nome">${p.nome}</span>
+                <button class="btn btn-sm btn-add" onclick="handleAdicionarNaFila('${p.id}')">
+                    + Adicionar
+                </button>
+            </div>
+        `).join('');
+    }
     
-    html += participantes.map(p => `
-        <div class="preferencia-item">
-            <input type="radio" 
-                   name="preferido" 
-                   id="pref-${p.id}" 
-                   value="${p.id}" 
-                   class="preferencia-input"
-                   ${prefId === p.id ? 'checked' : ''}
-                   onchange="handlePreferenciaChange('${p.id}')">
-            <label for="pref-${p.id}" class="preferencia-label">
-                <span class="preferencia-radio"></span>
-                <span class="preferencia-nome">${p.nome}</span>
-                ${prefId === p.id ? '<span class="preferencia-badge">★ PREFERIDO</span>' : ''}
-            </label>
-        </div>
-    `).join('');
-    
-    lista.innerHTML = html;
+    // Renderizar fila de ganhadores ordenada
+    if (filaComNomes.length === 0) {
+        containerFila.innerHTML = `
+            <div class="lista-vazia-small">
+                <p>🎲 Nenhum ganhador definido (sorteio aleatório)</p>
+            </div>
+        `;
+    } else {
+        containerFila.innerHTML = filaComNomes.map((p, index) => `
+            <div class="fila-item" data-id="${p.id}">
+                <span class="fila-posicao">${index + 1}º</span>
+                <span class="fila-nome">${p.nome}</span>
+                <div class="fila-acoes">
+                    <button class="btn btn-sm btn-mover" onclick="handleMoverAcima('${p.id}')" ${index === 0 ? 'disabled' : ''} title="Mover para cima">
+                        ▲
+                    </button>
+                    <button class="btn btn-sm btn-mover" onclick="handleMoverAbaixo('${p.id}')" ${index === filaComNomes.length - 1 ? 'disabled' : ''} title="Mover para baixo">
+                        ▼
+                    </button>
+                    <button class="btn btn-sm btn-remover" onclick="handleRemoverDaFila('${p.id}')" title="Remover da fila">
+                        ✕
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
 }
 
 function renderizarPaginaSorteio() {
@@ -715,9 +786,31 @@ function handleLimparTodos() {
     }
 }
 
-function handlePreferenciaChange(id) {
-    selecionarPreferido(id || null);
+function handleAdicionarNaFila(id) {
+    adicionarPreferido(id);
     renderizarListaPreferencia();
+}
+
+function handleRemoverDaFila(id) {
+    removerPreferido(id);
+    renderizarListaPreferencia();
+}
+
+function handleMoverAcima(id) {
+    moverPreferidoAcima(id);
+    renderizarListaPreferencia();
+}
+
+function handleMoverAbaixo(id) {
+    moverPreferidoAbaixo(id);
+    renderizarListaPreferencia();
+}
+
+function handleLimparFila() {
+    if (confirm('Tem certeza que deseja limpar toda a fila de ganhadores?')) {
+        setPreferidos([]);
+        renderizarListaPreferencia();
+    }
 }
 
 function handleSortear() {
@@ -901,13 +994,15 @@ function initSorteio() {
 }
 
 function verificarIntegridade() {
-    // Verificar se o preferido ainda existe na lista
-    const prefId = getPreferido();
-    if (prefId) {
+    // Verificar se os preferidos ainda existem na lista
+    const preferidos = getPreferidos();
+    if (preferidos.length > 0) {
         const participantes = getParticipantes();
-        const existe = participantes.find(p => p.id === prefId);
-        if (!existe) {
-            setPreferido(null);
+        const preferidosValidos = preferidos.filter(prefId => 
+            participantes.find(p => p.id === prefId)
+        );
+        if (preferidosValidos.length !== preferidos.length) {
+            setPreferidos(preferidosValidos);
         }
     }
     

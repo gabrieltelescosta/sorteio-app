@@ -399,6 +399,168 @@ body {
     font-weight: 600;
 }
 
+/* ============================================
+   FILA DE GANHADORES - NOVA INTERFACE
+   ============================================ */
+
+.config-secao {
+    margin-bottom: 25px;
+}
+
+.secao-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Fila de Ganhadores Ordenada */
+.fila-ganhadores {
+    min-height: 60px;
+}
+
+.fila-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+    border: 1px solid var(--secondary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    animation: slideIn 0.3s ease;
+}
+
+.fila-posicao {
+    background: var(--secondary);
+    color: var(--bg-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.fila-nome {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.fila-acoes {
+    display: flex;
+    gap: 6px;
+}
+
+/* Participantes Disponíveis */
+.participantes-disponiveis {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.participantes-disponiveis::-webkit-scrollbar {
+    width: 6px;
+}
+
+.participantes-disponiveis::-webkit-scrollbar-track {
+    background: var(--bg-input);
+    border-radius: 3px;
+}
+
+.participantes-disponiveis::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.disponivel-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    transition: var(--transition);
+}
+
+.disponivel-item:hover {
+    background: var(--border-color);
+}
+
+.disponivel-nome {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Botões Pequenos */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+
+.btn-add {
+    background: var(--success);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-add:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-mover {
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 4px 8px;
+    font-size: 0.7rem;
+}
+
+.btn-mover:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-mover:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.btn-remover {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 4px 10px;
+}
+
+.btn-remover:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Lista Vazia Pequena */
+.lista-vazia-small {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    border: 2px dashed var(--border-color);
+}
+
 /* Área do Sorteio */
 .sorteio-container {
     text-align: center;

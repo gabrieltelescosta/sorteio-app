@@ -13,7 +13,6 @@
             <h1><span class="header-icon">🎯</span><span class="header-text">Sistema de Sorteio</span></h1>
             <nav class="nav">
                 <a href="index.html" class="nav-link">Cadastro</a>
-                <a href="configuracao.html" class="nav-link active">Configuração</a>
                 <a href="sorteio.html" class="nav-link">Sorteio</a>
             </nav>
             <div class="header-actions">
@@ -23,17 +22,31 @@
 
         <!-- Card Principal -->
         <main class="card">
-            <h2 class="card-title">⭐ Configuração do Ganhador</h2>
+            <h2 class="card-title">⭐ Fila de Ganhadores</h2>
             
             <!-- Explicação -->
             <div class="alert alert-info">
-                Selecione um participante para que ele seja o ganhador garantido do sorteio.
-                Se nenhum for selecionado, o sorteio será totalmente aleatório.
+                Defina a ordem dos ganhadores. O 1º da fila ganha o primeiro sorteio, o 2º ganha o segundo, e assim por diante.
+                Quando a fila esvaziar, os sorteios serão aleatórios.
             </div>
 
-            <!-- Lista de Preferências -->
-            <div id="preferencia-lista" class="preferencia-lista">
-                <!-- Renderizado via JavaScript -->
+            <!-- Seção: Fila Ordenada de Ganhadores -->
+            <div class="config-secao">
+                <h3 class="secao-titulo">🏆 Ordem dos Ganhadores</h3>
+                <div id="fila-ganhadores" class="fila-ganhadores">
+                    <!-- Renderizado via JavaScript -->
+                </div>
+                <button id="btn-limpar-fila" class="btn btn-danger btn-sm mt-20" onclick="handleLimparFila()">
+                    🗑️ Limpar Fila
+                </button>
+            </div>
+
+            <!-- Seção: Participantes Disponíveis -->
+            <div class="config-secao mt-20">
+                <h3 class="secao-titulo">👥 Participantes Disponíveis</h3>
+                <div id="participantes-disponiveis" class="participantes-disponiveis">
+                    <!-- Renderizado via JavaScript -->
+                </div>
             </div>
         </main>
 
